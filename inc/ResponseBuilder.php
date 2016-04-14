@@ -62,13 +62,37 @@ class ResponseBuilder {
         return $response;
     }
 
+
+
+
     /**
-     * @return mixed
+     * @return string
      */
     public function buildRejectCallResponse() {
         $response = new SimpleXMLElement("<Response/>");
         $response->addChild('Reject')->addAttribute("reason", "busy");
         return $response->asXML();
+    }
+
+    /**
+     * @return string
+     */
+    public function buildRejectCallResponse2() {
+        $response = "<Response>\n";
+        $response .= "<Reject reason=\"busy\">\n";
+        $response .= "</Response>\n";
+        return $response;
+    }
+
+    /**
+     * @return string
+     */
+    public function buildRejectCallResponse3() {
+        return <<<END
+<Response>
+<Reject reason="busy">
+</Response>
+END;
     }
 
 }
