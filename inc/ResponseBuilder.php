@@ -3,10 +3,10 @@
 class ResponseBuilder {
 
     /**
-     * @param $group
+     * @param $group Group
      * @return string
      */
-    public function buildForwardToAdministratorsResponse($group) {
+    public function buildForwardToAdministratorsResponse(Group $group) {
         $response = "<Response>\n";
         $response .= "<Dial>\n";
         foreach ($group->getAdministrators() as $phone) {
@@ -19,11 +19,11 @@ class ResponseBuilder {
     }
 
     /**
-     * @param $group
+     * @param $group Group
      * @param $Digits
      * @return string
      */
-    public function buildDialOutgoingCallResponse($group, $Digits) {
+    public function buildDialOutgoingCallResponse(Group $group, $Digits) {
         $response = "<Response>\n";
         $response .= "<Dial";
         $response .= ' timeout="30"';
