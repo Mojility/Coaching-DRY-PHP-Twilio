@@ -2,73 +2,79 @@
 
 class ResponseBuilder {
 
+    private $response;
+
+    public function __construct() {
+        $this->response = new SimpleXMLElement('<Response/>');
+    }
+
     /**
      * @param $group Group
      * @return string
      */
     public function buildForwardToAdministratorsResponse(Group $group) {
-        $response = "<Response>\n";
-        $response .= "<Dial>\n";
+        $dialElement = $this->response->addChild('Dial');
         foreach ($group->getAdministrators() as $phone) {
-            $response .= "<Number>$phone</Number>\n";
+            $dialElement->addChild('Number', $phone);
         }
-        $response .= "</Dial>\n";
-        $response .= "<Say>Sorry, nobody could be reached at this time. Please try again later.</Say>\n";
-        $response .= "</Response>\n";
-        return $response;
+        $this->response->addChild('Say', 'Sorry, nobody could be reached at this time. Please try again later.');
+        return $this->responseAsXmlString();
     }
 
     /**
      * @param $group Group
-     * @param $Digits
+     * @param $digits
      * @return string
      */
-    public function buildDialOutgoingCallResponse(Group $group, $Digits) {
-        $response = "<Response>\n";
-        $response .= "<Dial";
-        $response .= ' timeout="30"';
-        $response .= ' callerId="' . $group->getPhone() . '"';
-        $response .= ">$Digits</Dial>\n";
-        $response .= "</Response>\n";
-        return $response;
+    public function buildDialOutgoingCallResponse(Group $group, $digits) {
+        $dialElement = $this->response->addChild('Dial', $digits);
+        $dialElement->addAttribute('timeout', 30);
+        $dialElement->addAttribute('callerId', $group->getPhone());
+        return $this->responseAsXmlString();
     }
 
     /**
      * @return string
      */
     public function buildInvalidDigitsResponse() {
-        $response = "<Response>\n";
-        $response .= "<Say>You must provide a valid 10-digit phone number to dial</Say>\n";
-        $response .= "<Redirect>" . SCRIPT_URL . "</Redirect>\n";
-        $response .= "</Response>\n";
-        return $response;
+        $this->response->addChild('Say', 'You must provide a valid 10-digit phone number to dial');
+        $this->response->addChild('Redirect', SCRIPT_URL);
+        return $this->responseAsXmlString();
     }
 
     /**
      * @return string
      */
     public function buildGatherDigitsResponse() {
-        $response = "<Response>\n";
-        $response .= "<Gather";
-        $response .= ' action="' . SCRIPT_URL . '"';
-        $response .= ' timeout="2"';
-        $response .= ">\n";
-        $response .= "<Say>Enter outgoing number.</Say>\n";
-        $response .= "<Pause length=\"8\"/>\n";
-        $response .= "</Gather>\n";
-        $response .= "<Say>Sorry, I didn't get your input.</Say>\n";
-        $response .= "<Redirect>" . SCRIPT_URL . "</Redirect>\n";
-        $response .= "</Response>\n";
-        return $response;
+        $gatherElement = $this->response->addChild('Gather');
+        $gatherElement->addAttribute('action', SCRIPT_URL);
+        $gatherElement->addAttribute('timeout', 2);
+
+        $gatherElement->addChild('Say', 'Enter outgoing number.');
+
+        $pauseElement = $gatherElement->addChild('Pause');
+        $pauseElement->addAttribute('length', 8);
+
+        $this->response->addChild('Say', 'Sorry, I didn\'t get your input.');
+        $this->response->addChild('Redirect', SCRIPT_URL);
+
+        return $this->responseAsXmlString();
     }
 
     /**
      * @return string
      */
     public function buildRejectCallResponse() {
-        $response = new SimpleXMLElement("<Response/>");
-        $response->addChild('Reject')->addAttribute("reason", "busy");
-        return $response->asXML();
+        $this->response->addChild('Reject')->addAttribute("reason", "busy");
+        return $this->responseAsXmlString();
+    }
+
+    /**
+     * @return string
+     */
+    public function responseAsXmlString() {
+        $responseXml = $this->response->asXML();
+        return $responseXml;
     }
 
 }
