@@ -3,10 +3,10 @@
 class ResponseBuilder {
 
     /**
-     * @param $group
+     * @param $group Group
      * @return string
      */
-    public function buildForwardToAdministratorsResponse($group) {
+    public function buildForwardToAdministratorsResponse(Group $group) {
         $response = "<Response>\n";
         $response .= "<Dial>\n";
         foreach ($group->getAdministrators() as $phone) {
@@ -19,11 +19,11 @@ class ResponseBuilder {
     }
 
     /**
-     * @param $group
+     * @param $group Group
      * @param $Digits
      * @return string
      */
-    public function buildDialOutgoingCallResponse($group, $Digits) {
+    public function buildDialOutgoingCallResponse(Group $group, $Digits) {
         $response = "<Response>\n";
         $response .= "<Dial";
         $response .= ' timeout="30"';
@@ -62,9 +62,6 @@ class ResponseBuilder {
         return $response;
     }
 
-
-
-
     /**
      * @return string
      */
@@ -72,27 +69,6 @@ class ResponseBuilder {
         $response = new SimpleXMLElement("<Response/>");
         $response->addChild('Reject')->addAttribute("reason", "busy");
         return $response->asXML();
-    }
-
-    /**
-     * @return string
-     */
-    public function buildRejectCallResponse2() {
-        $response = "<Response>\n";
-        $response .= "<Reject reason=\"busy\">\n";
-        $response .= "</Response>\n";
-        return $response;
-    }
-
-    /**
-     * @return string
-     */
-    public function buildRejectCallResponse3() {
-        return <<<END
-<Response>
-<Reject reason="busy">
-</Response>
-END;
     }
 
 }
